@@ -36,3 +36,12 @@ insert into parents (first_name, last_name) values
     ("Ah Kow", "Tan"),
     ("Mable", "Ng"),
     ("Alice", "Smith");
+
+
+/* Updates */
+/* update the parent's last name with id 4 to be patterson */
+update parents set last_name="Patterson" where parent_id=4;
+
+/* Delete */
+/* Remove the parent with the id 3 */
+delete from parents where parent_id = 3;
