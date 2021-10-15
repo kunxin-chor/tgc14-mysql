@@ -19,3 +19,10 @@ create table parents (
 
 /* show all the tables in the current active database */
 show tables;
+
+/* check the columns of a table */
+describe parents;
+
+/* how to add rows to table */
+/*insert into <table name> (<cols>) values (<values>)*/
+insert into parents (first_name, last_name) values ('Foo', 'Lin Lin');
