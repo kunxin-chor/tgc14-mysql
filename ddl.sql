@@ -9,3 +9,13 @@ use swimming_school;
 
 /* see the current database */
 SELECT DATABASE();
+
+/* create a table */
+create table parents (
+    parent_id int unsigned auto_increment primary key,
+    first_name varchar(200) not null,
+    last_name varchar(200) not null
+) engine = innodb;
+
+/* show all the tables in the current active database */
+show tables;
