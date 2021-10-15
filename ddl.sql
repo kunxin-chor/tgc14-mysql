@@ -26,3 +26,13 @@ describe parents;
 /* how to add rows to table */
 /*insert into <table name> (<cols>) values (<values>)*/
 insert into parents (first_name, last_name) values ('Foo', 'Lin Lin');
+
+/* select all rows from a table */
+/* select * from <table name> */
+select * from parents;
+
+/* insert multiple */
+insert into parents (first_name, last_name) values
+    ("Ah Kow", "Tan"),
+    ("Mable", "Ng"),
+    ("Alice", "Smith");
