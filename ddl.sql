@@ -118,3 +118,6 @@ create table authors_books (
     foreign key(author_id) references authors(author_id) on delete cascade,
     foreign key(book_id) references books(book_id) on delete cascade
 ) engine = innodb;
+
+/* create a record indicating that JRR Tolkien wrote The Lord of the Rings */
+insert into authors_books (author_id, book_id) values (1,1);
