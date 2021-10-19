@@ -136,3 +136,9 @@ is greater than 30000 */
 SELECT SUM(amount), YEAR(paymentDate), MONTH(paymentDate) FROM payments
 GROUP BY YEAR(paymentDate), MONTH(paymentDate)
 HAVING SUM(amount) > 30000
+
+/* SUBQUERIES */
+SELECT * from customers where creditLimit > (SELECT AVG(creditLimit) FROM customers);
+
+SELECT * from products WHERE productCode NOT IN
+	(SELECT DISTINCT(productCode) from orderdetails);
