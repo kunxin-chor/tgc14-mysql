@@ -80,3 +80,26 @@ insert into students (name, date_of_birth, swimming_level, parent_id)
  which level_id is 0 unless we delete all the students first*/
  alter table students add constraint fk_students_swimming_levels
     foreign key (level_id) references swimming_levels(level_id);
+
+/* BOOKS SCHEMA */
+create database library;
+
+use library;
+
+create table books (
+    book_id int unsigned auto_increment primary key,
+    title varchar(100) not null,
+    synospis text
+) engine = innodb;
+
+insert into books (title, synospis) 
+    values ("The Lord of the Rings", "Two short guys must return a ring");
+
+/* display all rows from a table */
+select * from books;
+
+create table authors (
+    author_id int unsigned primary key auto_increment,
+    first_name varchar(50) not null,
+    last_name varchar(50) not null
+) engine = innodb;
