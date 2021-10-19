@@ -51,3 +51,4 @@ SELECT AVG(amount), customers.customerNumber, customerName from payments
 JOIN customers ON payments.customerNumber = customers.customerNumber
 GROUP BY customers.customerNumber, customerName
 HAVING AVG(amount) > 10000
+
