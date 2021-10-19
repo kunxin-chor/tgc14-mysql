@@ -103,3 +103,18 @@ create table authors (
     first_name varchar(50) not null,
     last_name varchar(50) not null
 ) engine = innodb;
+
+/* insert multiple rows at one go */
+insert into authors (first_name, last_name) 
+    values ("John Ronald", "Tolkien"),
+           ("J.K", "Rowling"),
+           ("Brandon", "Sanderson"),
+           ("Jim", "Butcher");
+
+create table authors_books (
+    id int unsigned primary key auto_increment,
+    author_id int unsigned not null,
+    book_id int unsigned,
+    foreign key(author_id) references authors(author_id) on delete cascade,
+    foreign key(book_id) references books(book_id) on delete cascade
+) engine = innodb;
