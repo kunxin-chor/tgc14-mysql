@@ -109,6 +109,76 @@ async function main(){
         await connection.execute(query, binding);
         res.redirect('/actors');
     })
+
+    app.get('/films/create', async function(req,res){
+        
+        let [languages] = await connection.execute("SELECT * FROM language");
+
+        res.render('film_create',{
+            'languages': languages
+        })
+    });
+
+    app.post('/films/create', async function(req,res){
+
+        let [languages] = await connection.execute(
+                "SELECT * from languages where language_id = ?", 
+                [req.body.language_id]);
+
+
+        if (languages.length == 0) {
+            res.sendStatus(400);
+            res.send("Invalid langauge id");
+        }
+
+        let query = `INSERT INTO film (title, description, language_id, rental_duration, rental_rate,replacement_cost )
+            VALUES(?, ?, ?, ?, ?, ?)`;
+        let bindings = [req.body.title,
+                        req.body.description,
+                        req.body.language_id,
+                        req.body.rental_duration,
+                        req.body.rental_rate,
+                        req.body.replacement_cost];
+        await connection.execute(query, bindings);
+        res.redirect('/actors');
+    });
+
+    app.get('/films/:film_id/update', async function(req,res){
+        let [films] = await connection.execute(
+            "SELECT * from film WHERE film_id = ?", [req.params.film_id]);
+        let film = films[0];
+
+        let [languages] = await connection.execute("SELECT * FROM language");
+
+        res.render('film_edit',{
+            'film': film,
+            'languages': languages
+        })
+
+    })
+
+    app.post('/films/:film_id/update', async function(req,res){
+        let query = `UPDATE film
+                     SET title = ?,
+                         description = ?,
+                         language_id = ?,
+                         rental_duration = ?,
+                         rental_rate = ?,
+                         replacement_cost = ?
+                    WHERE film_id = ?
+                    `;
+        let bindings = [req.body.title,
+            req.body.description,
+            req.body.language_id,
+            req.body.rental_duration,
+            req.body.rental_rate,
+            req.body.replacement_cost,
+            req.params.film_id
+        ]
+
+        await connection.execute(query, bindings);
+        res.redirect('/actors');
+    })
 }
 main();
 
