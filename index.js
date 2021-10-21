@@ -55,6 +55,10 @@ async function main(){
             'actors': actors
         })
     })
+
+    app.get('/actors/create', function(req,res){
+        res.render("actor_create");
+    })
 }
 main();
 
