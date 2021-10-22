@@ -113,16 +113,19 @@ async function main(){
     app.get('/films/create', async function(req,res){
         
         let [languages] = await connection.execute("SELECT * FROM language");
+        let [actors] = await connection.execute("SELECT * FROM actor");
+
 
         res.render('film_create',{
-            'languages': languages
+            'languages': languages,
+            'actors':actors
         })
     });
 
     app.post('/films/create', async function(req,res){
 
         let [languages] = await connection.execute(
-                "SELECT * from languages where language_id = ?", 
+                "SELECT * from language where language_id = ?", 
                 [req.body.language_id]);
 
 
@@ -139,7 +142,27 @@ async function main(){
                         req.body.rental_duration,
                         req.body.rental_rate,
                         req.body.replacement_cost];
-        await connection.execute(query, bindings);
+        let [results] = await connection.execute(query, bindings);
+        let newFilmID = results.insertId; 
+
+        // create the relationships with actors after the film
+        // has been inserted into the table
+
+        // 1. extract the actors that has been selected
+        // if no actors selected, req.body.actors will be undefined
+        // if 1 actor selected, req.body.actors will be a string
+        // if multiple actors selected, req.body.actors will be an array
+        let actors = req.body.actors || [];
+        actors = Array.isArray(actors) ? actors : [actors];
+
+        
+        for (let a of actors) {
+            let query = `INSERT INTO film_actor (actor_id, film_id)
+                           VALUES (?, ?)`;
+            let bindings = [a, newFilmID];
+            connection.execute(query, bindings);
+        }
+
         res.redirect('/actors');
     });
 
