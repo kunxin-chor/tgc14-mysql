@@ -264,6 +264,14 @@ async function main() {
         }
 
     })
+
+    app.get('/film/:film_id/delete', function(req,res){
+        // delete the all relationships associated with film first
+        await connection.execute("DELETE FROM film_actor WHERE film_id= ?", [req.params.film_id]);
+
+        await connection.execute("DELETE FROM film WHERE film_id = ?", [req.params.film_id]);
+        res.redirect('/');
+    })
 }
 main();
 
