@@ -167,6 +167,8 @@ async function main() {
     });
 
     app.get('/films/:film_id/update', async function (req, res) {
+
+        await connection.execute("START TRANSACTION");
         let [films] = await connection.execute(
             "SELECT * from film WHERE film_id = ?", [req.params.film_id]);
         let film = films[0];
@@ -206,7 +208,9 @@ async function main() {
     })
 
     app.post('/films/:film_id/update', async function (req, res) {
-        let query = `UPDATE film
+        try {
+            await connection.execute("START TRANSACTION");
+            let query = `UPDATE film
                      SET title = ?,
                          description = ?,
                          language_id = ?,
@@ -215,44 +219,50 @@ async function main() {
                          replacement_cost = ?
                     WHERE film_id = ?
                     `;
-        let bindings = [req.body.title,
-            req.body.description,
-            req.body.language_id,
-            req.body.rental_duration,
-            req.body.rental_rate,
-            req.body.replacement_cost,
-            req.params.film_id
-        ]
+            let bindings = [req.body.title,
+                req.body.description,
+                req.body.language_id,
+                req.body.rental_duration,
+                req.body.rental_rate,
+                req.body.replacement_cost,
+                req.params.film_id
+            ]
 
-        await connection.execute(query, bindings);
-
-        // after updating the original film entity, we will update
-        // the M:M relationships
-
-        // the hard way
-        // 1. add to the film_actor pivot table new actors for the movie
-        // 2. remove from the film_actor pivot table actors that were in the movie
-        //    but are not
-
-        // THE SHORTCUT
-        // 1.  delete all actors
-        // 2. re-add the selected actors
-
-        await connection.execute(
-            "DELETE FROM film_actor WHERE film_id = ?", [req.params.film_id]
-        )
-
-        let actors = req.body.actors || [];
-        actors = Array.isArray(actors) ? actors : [actors];
-
-        for (let a of actors) {
-            let query = `INSERT INTO film_actor (actor_id, film_id)
-                           VALUES (?, ?)`;
-            let bindings = [a, req.params.film_id];
             await connection.execute(query, bindings);
+
+            // after updating the original film entity, we will update
+            // the M:M relationships
+
+            // the hard way
+            // 1. add to the film_actor pivot table new actors for the movie
+            // 2. remove from the film_actor pivot table actors that were in the movie
+            //    but are not
+
+            // THE SHORTCUT
+            // 1.  remove all actors from working with the film
+            // 2. re-add the selected actors
+
+            await connection.execute(
+                "DELETE FROM film_actor WHERE film_id = ?", [req.params.film_id]
+            )
+
+            let actors = req.body.actors || [];
+            actors = Array.isArray(actors) ? actors : [actors];
+
+            for (let a of actors) {
+                let query = `INSERT INTO film_actor (actor_id, film_id)
+                           VALUES (?, ?)`;
+                let bindings = [a, req.params.film_id];
+                await connection.execute(query, bindings);
+            }
+            await connection.execute("COMMIT");
+            res.redirect('/actors');
+
+        } catch (e) {
+            await connection.execute("ROLLBACK");
+            res.send(e);
         }
 
-        res.redirect('/actors');
     })
 }
 main();
