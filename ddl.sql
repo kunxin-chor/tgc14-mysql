@@ -55,7 +55,7 @@ create table students (
 ) engine=innodb;
 
 /* add the foreign key */
-alter table students add parent_id int unsigned not null;
+alter table students add column parent_id int unsigned not null;
 /* for every row in the students table,
 each row's parent_id must refer to a valid parent_id in the parents table */
 alter table students add constraint fk_students_parents
